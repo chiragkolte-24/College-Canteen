@@ -1,4 +1,5 @@
 
+
 package com.canteen.util;
 
 import java.sql.Connection;
@@ -7,15 +8,26 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
+    private static final String URL =
+        System.getenv("DB_URL");
+
+    private static final String USER =
+        System.getenv("DB_USER");
+
+    private static final String PASSWORD =
+        System.getenv("DB_PASSWORD");
+
     public static Connection getConnection()
             throws SQLException {
 
-        String url = System.getenv("DB_URL");
-        String user = System.getenv("DB_USER");
-        String password = System.getenv("DB_PASSWORD");
+        if (URL == null || USER == null || PASSWORD == null) {
+            throw new SQLException(
+                "Database environment variables are missing!"
+            );
+        }
 
         return DriverManager.getConnection(
-            url, user, password
+            URL, USER, PASSWORD
         );
     }
 }
