@@ -1,5 +1,6 @@
 
 
+
 package com.canteen.util;
 
 import java.sql.Connection;
@@ -8,26 +9,31 @@ import java.sql.SQLException;
 
 public class DBConnection {
 
-    private static final String URL =
-        System.getenv("DB_URL");
-
-    private static final String USER =
-        System.getenv("DB_USER");
-
-    private static final String PASSWORD =
-        System.getenv("DB_PASSWORD");
-
     public static Connection getConnection()
             throws SQLException {
 
-        if (URL == null || USER == null || PASSWORD == null) {
+        String url = System.getenv("DB_URL");
+        String user = System.getenv("DB_USER");
+        String password = System.getenv("DB_PASSWORD");
+
+        if (url == null || url.isBlank()
+                || user == null || user.isBlank()
+                || password == null || password.isBlank()) {
+
             throw new SQLException(
-                "Database environment variables are missing!"
+                "Missing DB_URL, DB_USER or DB_PASSWORD environment variable."
             );
         }
 
-        return DriverManager.getConnection(
-            URL, USER, PASSWORD
-        );
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new SQLException(
+                "MySQL JDBC Driver not found. Check pom.xml.", e
+            );
+        }
+
+        return DriverManager.getConnection(url, user, password);
     }
 }
+
